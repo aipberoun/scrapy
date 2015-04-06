@@ -28,8 +28,14 @@ class Spider(object_ref):
         elif not getattr(self, 'name', None):
             raise ValueError("%s must have a name" % type(self).__name__)
         self.__dict__.update(kwargs)
-        if not hasattr(self, 'start_urls'):
-            self.start_urls = []
+        if kwargs.has_key('start_urls'):
+            start_urls = kwargs.get('start_urls')
+            if isinstance(start_urls, basestring):
+               start_urls = start_urls.split(',')
+            self.start_urls = start_urls
+        else:
+            if not hasattr(self, 'start_urls'):
+                self.start_urls = []
 
     def log(self, message, level=log.DEBUG, **kw):
         """Log the given messages at the given log level. Always use this
