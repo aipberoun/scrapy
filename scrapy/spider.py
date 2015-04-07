@@ -24,9 +24,9 @@ class Spider(object_ref):
             raise ValueError("%s must have a name" % type(self).__name__)
         self.__dict__.update(kwargs)
         if kwargs.has_key('start_urls'):
-            start_urls = kwargs.get('start_urls')
+            start_urls = kwargs.pop('start_urls')
             if isinstance(start_urls, basestring):
-               start_urls = start_urls.split(',')
+                start_urls = map(str.strip, start_urls.splitlines())
             self.start_urls = start_urls
         else:
             if not hasattr(self, 'start_urls'):
