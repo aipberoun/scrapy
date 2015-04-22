@@ -217,9 +217,8 @@ Settings API
 
     .. method:: getbool(name, default=False)
 
-       Get a setting value as a boolean. For example, both ``1`` and ``'1'``, and
-       ``True`` return ``True``, while ``0``, ``'0'``, ``False`` and ``None``
-       return ``False````
+       Get a setting value as a boolean. All ``1``, ``'1'``, 
+       ``True`` and any lower and upper case combination in ``'true'``, ``'t'``, ``'yes'``, ``'y'`` return ``True``, while ``0``, ``'0'``, ``False`` and ``None`` return ``False````
 
        For example, settings populated through environment variables set to ``'0'``
        will return ``False`` when using this method.

@@ -63,9 +63,18 @@ class Settings(object):
     def getbool(self, name, default=False):
         """
         True is: 1, '1', True
-        False is: 0, '0', False, None
+                  or any lower / upper case combination of 'True', 'yes', 't', 'y'
+        False is: 0, False, None or any string other than above
         """
-        return bool(int(self.get(name, default)))
+        b = self.get(name, default)
+        if isinstance(b, bool):
+            return b
+        elif isinstance(b, int):
+            return bool(b)
+        elif b is None:
+            return False
+        else:
+            return b.lower() in ['true', 'y', 't', '1', 'yes']
 
     def getint(self, name, default=0):
         return int(self.get(name, default))
