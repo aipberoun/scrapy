@@ -9,7 +9,10 @@ import marshal
 import cPickle as pickle
 from xml.sax.saxutils import XMLGenerator
 from scrapy.utils.serialize import ScrapyJSONEncoder
+from scrapy.utils.xml import get_xslt, apply_xslt
 from scrapy.item import BaseItem
+from scrapy.conf import settings
+from scrapy import log
 
 __all__ = ['BaseItemExporter', 'PprintItemExporter', 'PickleItemExporter',
            'CsvItemExporter', 'XmlItemExporter', 'JsonLinesItemExporter',
@@ -118,7 +121,17 @@ class XmlItemExporter(BaseItemExporter):
         self.root_element = kwargs.pop('root_element', 'items')
         self._configure(kwargs)
         self.xg = XMLGenerator(file, encoding=self.encoding)
-
+        self.file = file
+        self.use_xsl = settings.getbool('USE_XSL')
+        if self.use_xsl:
+            xsl_path = settings.get('XSL_PATH')
+            log.msg("We are using XSL from path %s"%xsl_path)
+            self.xslt = get_xslt(xsl_path)
+        else:
+            self.xslt = None
+        if self.xslt is None:
+            self.use_xsl = False
+            
     def start_exporting(self):
         self.xg.startDocument()
         self.xg.startElement(self.root_element, {})
@@ -132,6 +145,10 @@ class XmlItemExporter(BaseItemExporter):
     def finish_exporting(self):
         self.xg.endElement(self.root_element)
         self.xg.endDocument()
+        if self.use_xsl:
+            xml = apply_xslt(path, self.xslt)
+            self.file.truncate(0)
+            self.file.write(xml)
 
     def _export_xml_field(self, name, serialized_value):
         self.xg.startElement(name, {})
