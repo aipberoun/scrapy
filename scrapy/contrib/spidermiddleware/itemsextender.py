@@ -17,7 +17,7 @@ but that will still need filling of body HTML manually in each spider.
 from scrapy.http import Request
 from scrapy.conf import settings
 from scrapy import log, Field
-
+from datetime import datetime
 
 class ItemsExtenderMiddleware(object):
 
@@ -27,7 +27,8 @@ class ItemsExtenderMiddleware(object):
         ext_name = "_Ext_" + cls.__name__
         new_fields = {
             '_original_html' : Field(),
-            '_original_url' : Field()
+            '_original_url' : Field(),
+            '_time_scraped' : Field(),
             }
         ext_cls = type(ext_name, (cls,), new_fields)
         ei = ext_cls()
@@ -46,4 +47,5 @@ class ItemsExtenderMiddleware(object):
                 else:
                     x['_original_html'] = response.body
                 x['_original_url'] = response.url
+                x['_time_scraped'] = datetime.now().isoformat()
                 yield x
